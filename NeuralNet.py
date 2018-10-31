@@ -6,6 +6,7 @@ from keras import layers
 from keras import models
 from keras import optimizers
 from keras import backend as K
+from unet3d.model import unet
 
 train_data_path = 'C:\\Users\\Marzena\\Documents\\MOJE\\STUDIA\\PRACA_INZ\\data\\train_data'
 inputs_path = os.path.join(train_data_path, 'inputs')
@@ -65,29 +66,31 @@ def dice_coef_loss(y_true, y_pred):
 
 # koniec kodu ze źródła
 
-model = models.Sequential()
+# model = models.Sequential()
 # architektura sieci (warstwy)
 
-model.add(layers.Conv3D(64, kernel_size=3, activation='relu', input_shape=(4, 240, 240, 155),
-                        data_format='channels_first'))
-model.add(layers.MaxPooling3D((2, 2, 2)))
-model.add(layers.Conv3D(128, kernel_size=3, activation='relu'))
-model.add(layers.MaxPooling3D((2, 2, 2)))
-model.add(layers.Conv3D(128, kernel_size=3, activation='relu'))
-model.add(layers.MaxPooling3D((2, 2, 2)))
-model.add(layers.Conv3D(256, kernel_size=3, activation='relu'))
-model.add(layers.MaxPooling3D((2, 2, 2)))
-model.add(layers.Flatten())
-model.add(layers.Dropout(0.5))
-model.add(layers.Dense(512, activation='relu'))
-model.add(layers.Dense(8928000, activation='softmax'))  # na wyjsciu: dla kazdego piksela
-# prawdopodobienstwo przynaleznosci do danej klasy (guz/ zdrowa tkanka)
+# model.add(layers.Conv3D(64, kernel_size=3, activation='relu', input_shape=(4, 240, 240, 155),
+#                         data_format='channels_first'))
+# model.add(layers.MaxPooling3D((2, 2, 2)))
+# model.add(layers.Conv3D(128, kernel_size=3, activation='relu'))
+# model.add(layers.MaxPooling3D((2, 2, 2)))
+# model.add(layers.Conv3D(128, kernel_size=3, activation='relu'))
+# model.add(layers.MaxPooling3D((2, 2, 2)))
+# model.add(layers.Conv3D(256, kernel_size=3, activation='relu'))
+# model.add(layers.MaxPooling3D((2, 2, 2)))
+# model.add(layers.Flatten())
+# model.add(layers.Dropout(0.5))
+# model.add(layers.Dense(512, activation='relu'))
+# model.add(layers.Dense(8928000, activation='softmax'))  # na wyjsciu: dla kazdego piksela
+# # prawdopodobienstwo przynaleznosci do danej klasy (guz/ zdrowa tkanka)
 
-# źródło: https://github.com/jocicmarko/ultrasound-nerve-segmentation/blob/master/train.py
+
+model = unet.get_unet(...)
+
 model.compile(optimizer=optimizers.Adam(lr=1e-5),
-              loss=dice_coef_loss,
+              loss=dice_coef_loss, # może binary_crossentropy ??
               metrics=[dice_coef])
-# koniec kodu ze źródła
+
 
 brains_number = len(os.listdir(labels_path)) - 1  # minus 1 bo ostatni plik to desktop.ini
 # brains_number = 285
@@ -99,7 +102,7 @@ history = model.fit_generator(train_generator,
                               steps_per_epoch=25,
                               epochs=100)
 
-model.save('simple_net_no_validation.h5')
+model.save('u_net_1.h5')
 print(history.history.keys())
 
 results = model.evaluate_generator(test_generator)
