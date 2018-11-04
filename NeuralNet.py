@@ -70,6 +70,7 @@ def dice_coef_loss(y_true, y_pred):
 # koniec kodu ze źródła
 
 input_img = Input(shape=(4, 240, 240, 155), name='img')
+print("Shape of input img: %s" % input_img.shape)
 model = unet.get_unet(input_img, n_filters=16)
 
 model.compile(optimizer=optimizers.Adam(lr=1e-5),
