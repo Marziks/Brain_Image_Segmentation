@@ -53,37 +53,48 @@ def get_unet(input_img, n_filters, batchnorm=True):
 
     print("c4:")
     c4 = conv3d_block(p3, n_filters=n_filters * 8, kernel_size=3, batchnorm=batchnorm)
-    p4 = MaxPooling3D((2, 2, 2), data_format="channels_first")(c4)
-    print("After max pooling: %s" % p4.shape)
-
-    print("c5:")
-    c5 = conv3d_block(p4, n_filters=n_filters * 16, kernel_size=3, batchnorm=batchnorm)
+    # p4 = MaxPooling3D((2, 2, 2), data_format="channels_first")(c4)
+    # print("After max pooling: %s" % p4.shape)
+    #
+    # print("c5:")
+    # c5 = conv3d_block(p4, n_filters=n_filters * 16, kernel_size=3, batchnorm=batchnorm)
 
     # expansive path
-    print("u6:")
-    u6 = Conv3DTranspose(n_filters * 8, kernel_size=3, strides=2,
-                         data_format="channels_first")(c5)
-    print(u6.shape)
-    u6 = concatenate([u6, c4])
-    c6 = conv3d_block(u6, n_filters * 8, kernel_size=3, batchnorm=batchnorm)
+    # print("u6:")
+    # u6 = Conv3DTranspose(n_filters * 8, kernel_size=3, strides=2,
+    #                      data_format="channels_first")(c5)
+    # print(u6.shape)
+    # u6 = concatenate([u6, c4])
+    # c6 = conv3d_block(u6, n_filters * 8, kernel_size=3, batchnorm=batchnorm)
 
-    u7 = Conv3DTranspose(n_filters * 4, kernel_size=3, strides=2,
-                         data_format="channels_first")(c6)
+    print("u7:")
+    u7 = Conv3DTranspose(n_filters * 4, kernel_size=3, strides=2, padding="same",
+                         data_format="channels_first")(c4)
+    print(u7.shape)
     u7 = concatenate([u7, c3])
+    print("Po concatenate: %s" % u7.shape)
     c7 = conv3d_block(u7, n_filters * 4, kernel_size=3, batchnorm=batchnorm)
 
-    u8 = Conv3DTranspose(n_filters * 2, kernel_size=3, strides=2,
+    print("u8:")
+    u8 = Conv3DTranspose(n_filters * 2, kernel_size=3, strides=2, padding="same",
                          data_format="channels_first")(c7)
+    print(u8.shape)
     u8 = concatenate([u8, c2])
+    print("Po concatenate: %s" % u8.shape)
     c8 = conv3d_block(u8, n_filters * 2, kernel_size=3, batchnorm=batchnorm)
 
-    u9 = Conv3DTranspose(n_filters * 1, kernel_size=3, strides=2,
+    print("u9:")
+    u9 = Conv3DTranspose(n_filters * 1, kernel_size=3, strides=2, padding="same",
                          data_format="channels_first")(c8)
+    print(u9.shape)
     u9 = concatenate([u9, c1])
+    print("Po concatenate: %s" % u9.shape)
     c9 = conv3d_block(u9, n_filters * 1, kernel_size=3, batchnorm=batchnorm)
 
     # output - wysegmentowany obraz
     outputs = Conv3D(1, (1, 1), data_format="channels_first", activation='sigmoid')(c9)
+    print("output:")
+    print(outputs.shape)
     model = Model(inputs=[input_img], outputs=[outputs])
 
     return model
