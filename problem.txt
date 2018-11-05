@@ -1,0 +1,43 @@
+Z konsoli po uruchomieniu:
+
+Shape of input img: (?, 4, 240, 240, 155)
+c1:
+Number of filters: 16
+Shape of first conv layer: (?, 16, 238, 238, 153)
+Shape of second conv layer: (?, 16, 236, 236, 151)
+After max pooling: (?, 16, 118, 118, 75)
+c2:
+Number of filters: 32
+Shape of first conv layer: (?, 32, 116, 116, 73)
+Shape of second conv layer: (?, 32, 114, 114, 71)
+After max pooling: (?, 32, 57, 57, 35)
+c3:
+Number of filters: 64
+Shape of first conv layer: (?, 64, 55, 55, 33)
+Shape of second conv layer: (?, 64, 53, 53, 31)
+After max pooling: (?, 64, 26, 26, 15)
+c4:
+Number of filters: 128
+Shape of first conv layer: (?, 128, 24, 24, 13)
+Shape of second conv layer: (?, 128, 22, 22, 11)
+u7:
+(?, 64, ?, ?, ?)
+
+
+
+Traceback (most recent call last):
+  File "C:\Program Files\JetBrains\PyCharm 2018.1.4\helpers\pydev\pydev_run_in_console.py", line 52, in run_file
+    pydev_imports.execfile(file, globals, locals)  # execute the script
+  File "C:\Program Files\JetBrains\PyCharm 2018.1.4\helpers\pydev\_pydev_imps\_pydev_execfile.py", line 18, in execfile
+    exec(compile(contents+"\n", file, 'exec'), glob, loc)
+  File "C:/Users/Marzena/PycharmProjects/BrainImageSegmentation/NeuralNet.py", line 74, in <module>
+    model = unet.get_unet(input_img, n_filters=16)
+  File "C:/Users/Marzena/PycharmProjects/BrainImageSegmentation\unet3d\model\unet.py", line 74, in get_unet
+    u7 = concatenate([u7, c3])
+  File "C:\Users\Marzena\PycharmProjects\BrainImageSegmentation\venv\lib\site-packages\keras\layers\merge.py", line 649, in concatenate
+    return Concatenate(axis=axis, **kwargs)(inputs)
+  File "C:\Users\Marzena\PycharmProjects\BrainImageSegmentation\venv\lib\site-packages\keras\engine\base_layer.py", line 431, in __call__
+    self.build(unpack_singleton(input_shapes))
+  File "C:\Users\Marzena\PycharmProjects\BrainImageSegmentation\venv\lib\site-packages\keras\layers\merge.py", line 362, in build
+    'Got inputs shapes: %s' % (input_shape))
+ValueError: A `Concatenate` layer requires inputs with matching shapes except for the concat axis. Got inputs shapes: [(None, 64, 45, 45, 23), (None, 64, 53, 53, 31)]
