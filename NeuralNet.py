@@ -6,7 +6,9 @@ import math
 from keras import optimizers
 from keras import backend as K
 from keras import Input
+
 from unet3d.model import unet
+import matplotlib as plt
 
 train_data_path = 'C:\\Users\\Marzena\\Documents\\MOJE\\STUDIA\\PRACA_INZ\\data\\train_data'
 inputs_path = os.path.join(train_data_path, 'inputs')
@@ -74,11 +76,12 @@ def dice_coef_loss(y_true, y_pred):
 
 # koniec kodu ze źródła
 
+
 input_img = Input(shape=(4, 160, 240, 240), name='img')
 print("Shape of input img: %s" % input_img.shape)
 model = unet.get_unet(input_img, n_filters=16)
 
-model.compile(optimizer=optimizers.SGD(lr=1e-5),
+model.compile(optimizer=optimizers.Adam(lr=1e-5),
               loss="binary_crossentropy",
               metrics=[dice_coef])
 model.summary()
@@ -92,29 +95,9 @@ validation_generator = data_generator(inputs_path, labels_path, train_set_size, 
 
 history = model.fit_generator(train_generator,
                               steps_per_epoch=train_set_size / 1,
-                              epochs=50,
+                              epochs=100,
                               validation_data=validation_generator,
-                              validation_steps=(brains_number - train_set_size)/1)
+                              validation_steps=(brains_number - train_set_size) / 1)
 
 model.save('u_net_1.h5')
 print(history.history.keys())
-
-# DO WYWALENIA
-
-# model = models.Sequential()
-# architektura sieci (warstwy)
-
-# model.add(layers.Conv3D(64, kernel_size=3, activation='relu', input_shape=(4, 240, 240, 155),
-#                         data_format='channels_first'))
-# model.add(layers.MaxPooling3D((2, 2, 2)))
-# model.add(layers.Conv3D(128, kernel_size=3, activation='relu'))
-# model.add(layers.MaxPooling3D((2, 2, 2)))
-# model.add(layers.Conv3D(128, kernel_size=3, activation='relu'))
-# model.add(layers.MaxPooling3D((2, 2, 2)))
-# model.add(layers.Conv3D(256, kernel_size=3, activation='relu'))
-# model.add(layers.MaxPooling3D((2, 2, 2)))
-# model.add(layers.Flatten())
-# model.add(layers.Dropout(0.5))
-# model.add(layers.Dense(512, activation='relu'))
-# model.add(layers.Dense(8928000, activation='softmax'))  # na wyjsciu: dla kazdego piksela
-# # prawdopodobienstwo przynaleznosci do danej klasy (guz/ zdrowa tkanka)
